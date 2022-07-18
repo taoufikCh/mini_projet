@@ -1,4 +1,6 @@
 <?php
+session_start();
+session_destroy();
 include('includes/header.php');
 //include('includes/navbar.php');
 ?>
@@ -12,6 +14,9 @@ include('includes/header.php');
  </div>
  <div class="card-body">
  <form action="logincode.php" method="POST">
+ <?php if(isset($_SESSION['message'])){
+        echo '<div class="card bg-danger text-white shadow"><div class="card-body">'.$_SESSION['message'].'</div></div>';
+    } ?>
  <div class="form-group mb-3">
  <label>Email ID</label>
  <input type="text" name="email" required
@@ -20,10 +25,16 @@ placeholder="Saisir votre adresse mail"
  </div>
 <div class="form-group mb-3">
  <label>Mot de passe</label>
- <input type="password" name="password" required
-placeholder="Saisir votre mot de passe"
- class="form-control">
- </div>
+ <input type="password" name="password" required placeholder="Saisir votre mot de passe" class="form-control">
+</div>
+<div class="form-group mb-3">
+ <label>Vous êtes </label>
+ <select name="you_are" id="you_are" class="form-control" required>
+        <option value="1">Administrateur</option>
+        <option value="2">Enseignant</option>
+        <option value="3">Etudiant</option>  
+  </select>
+</div>
 <div class="form-group mb-3 text-center">
  <button type="submit" name="login_btn" class="btn btn-primary">Se connecter</button>
  </div>

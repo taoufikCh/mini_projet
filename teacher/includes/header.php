@@ -4,7 +4,7 @@
     exit(0);
 }
 
-if($_SESSION['role']!="1"){
+if($_SESSION['role']!="2"){
     $_SESSION['message']="Accès interdit ";
     header("Location: ../login.php");
     exit(0);
@@ -30,6 +30,7 @@ if($_SESSION['role']!="1"){
 
     <!-- Custom styles for this template-->
     <link href="../css/sb-admin-2.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 
 </head>
 
