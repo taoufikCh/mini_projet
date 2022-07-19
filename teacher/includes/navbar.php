@@ -5,11 +5,11 @@
 <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
     <!-- Sidebar - Brand -->
-    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.php">
         <div class="sidebar-brand-icon rotate-n-15">
             <i class="fas fa-laugh-wink"></i>
         </div>
-        <div class="sidebar-brand-text mx-3">Suivi Absence</div>
+        <div class="sidebar-brand-text mx-3">SuiviAbsence</div>
     </a>
 
     <!-- Divider -->
@@ -28,36 +28,11 @@
             <span>Gestion des séances du cours</span></a>
     </li>
 
-    <li class="nav-item">
-        <a class="nav-link" href="manage_subjects.php">
-            <i class="fas fa-fw fa-cog"></i>
-            <span>Gestion des matières</span></a>
-    </li>
-
     <!-- Nav Item - Charts -->
     <li class="nav-item">
         <a class="nav-link" href="charts.html">
             <i class="fas fa-fw fa-chart-area"></i>
             <span>Statistique</span></a>
-    </li>
-
-    <li class="nav-item">
-        <a class="nav-link" href="manage_teacher.php">
-            <i class="fas fa-fw fa-chart-area"></i>
-            <span>Gestion des enseignants</span></a>
-    </li>
-
-    <!-- Nav Item -  -->
-    <li class="nav-item">
-        <a class="nav-link" href="manage_student.php">
-            <i class="fas fa-fw fa-table"></i>
-            <span>Gestion des étudiants</span></a>
-    </li>
-
-    <li class="nav-item">
-        <a class="nav-link" href="manage_groupe.php">
-            <i class="fas fa-fw fa-table"></i>
-            <span> Gestion des groupes</span></a>
     </li>
 
    
