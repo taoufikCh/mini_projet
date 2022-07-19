@@ -15,6 +15,8 @@ WHERE subject_groupe.IdMatiere='".$id_matiere."'";
 
 $res=mysqli_query($con, $query);
 
+$row = mysqli_fetch_assoc($res);
+
 //foreach($res as $data){
 //    echo $data['idGroupe']." ".$data['nomGroupe']." ".$data['idGroupe']." ".$data['IdMatiere']."</br>";  
 //}
@@ -23,8 +25,8 @@ $res=mysqli_query($con, $query);
 //echo json_encode($result);
 
 //$Response = array('Success' => "Success", 'Content' => $res);
-$Response =  $res;
-echo json_encode($res);
+//echo $row;
+echo json_encode($row);
 //exit;
  
 ?>

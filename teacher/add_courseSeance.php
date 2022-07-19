@@ -99,6 +99,7 @@ $res_mat=mysqli_query($con, $query);
 
 <script>
   $(function(){
+    
 
     $('#subject').on('change',function() {
        id_mat = $('#subject option:selected').val();
@@ -107,21 +108,26 @@ $res_mat=mysqli_query($con, $query);
         url: 'getgroupe.php',
         method: 'post',
         data: {id_mat: id_mat},
-        dataType: 'json',
+        //dataType: 'json',
         success: function(response){
           alert("ok");
         //console.log(result);
-        //var data = $.parseJSON(responce);
+        var data = response;
 
-        var len = response.length;
-        alert(response);
+        //var data = JSON.parse(JSON.stringify(response));
+
+        //alert(data.Content);
+
+        //var len = data.length;
+        var len = Object.keys(data).length;
+        alert("response = " +data);
+        alert("len="+len);
 
           $("#groupe").empty();
           $("#groupe").append("<option value=''><--select--></option>");
           for( var i = 0; i<len; i++){
-              var id = response[i]['idGroupe'];
-              var name = response[i]['nomGroupe'];
-              //var stock = response[i]['piece_stock'];
+              var id = data[i]['idGroupe'];
+              var name = data[i]['nomGroupe'];
               
               $("#groupe").append("<option value='"+id+"'>"+name+"</option>");
 
