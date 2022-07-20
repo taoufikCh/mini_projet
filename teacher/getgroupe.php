@@ -21,9 +21,6 @@ foreach($res as $data){
     //echo $data['idGroupe']." ".$data['nomGroupe']." ".$data['idGroupe']." ".$data['IdMatiere']."</br>"; 
     array_push($list, $data); 
 }
-$result = [];
-	$result['first_name'] = "John";
-	$result['last_name'] = "Doe";
 
 	echo json_encode($list);
 
