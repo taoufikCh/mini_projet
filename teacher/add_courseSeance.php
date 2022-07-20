@@ -81,9 +81,7 @@ $res_mat=mysqli_query($con, $query);
               <div class="col-md-3">
                 <select name="groupe" id="groupe" class="form-control" required>
                   <option value="">Choisir le groupe</option>
-                   <?php foreach($res_groupe as $mat){ ?>
-                      <option value="<?php echo $mat['idGroupe'] ?>"><?php echo $mat['nomGroupe']; ?></option>
-                    <?php } ?>  
+                    
                 </select>
               </div>
             </div>
@@ -103,38 +101,32 @@ $res_mat=mysqli_query($con, $query);
 
     $('#subject').on('change',function() {
        id_mat = $('#subject option:selected').val();
-       alert(id_mat);
+       //alert(id_mat);
       $.ajax({
         url: 'getgroupe.php',
         method: 'post',
         data: {id_mat: id_mat},
         //dataType: 'json',
         success: function(response){
-          alert("ok");
-        //console.log(result);
-        var data = response;
 
-        //var data = JSON.parse(JSON.stringify(response));
+        response = JSON.parse(response);
+        //console.log(response);
 
-        //alert(data.Content);
-
-        //var len = data.length;
-        var len = Object.keys(data).length;
-        alert("response = " +data);
-        alert("len="+len);
+        var len = response.length;
+        
+        //console.log("len="+len);
 
           $("#groupe").empty();
-          $("#groupe").append("<option value=''><--select--></option>");
+          $("#groupe").append("<option value=''>Choisir le groupe</option>");
           for( var i = 0; i<len; i++){
-              var id = data[i]['idGroupe'];
-              var name = data[i]['nomGroupe'];
-              
+              var id = response[i]['idGroupe'];
+              var name = response[i]['nomGroupe'];
+             //console.log("nomGroupe:" + name + "id = "+id);
               $("#groupe").append("<option value='"+id+"'>"+name+"</option>");
 
-            console.log(i);
+            //console.log("i="+i);
           }
 
-        alert("okk");
         },
         error: function(xhr, status, error){
         //console.error(xhr);
@@ -145,22 +137,6 @@ $res_mat=mysqli_query($con, $query);
     });    
 
   });
-
-
-  function workWithResponse(result) {
-
-    // jquery automatically converts the json into an object.
-    // iterate through results and append to the target element
-
-    $("#groupe option").remove();
-    $('#groupe').append("<option value=''>Choisir le groupe</option>");
-    $.each(result, function(key, value) {   
-         $('#groupe')
-             .append($("<option></option>")
-                        .attr("value",key)
-                        .text(value)); 
-    });        
-          }
 
 </script>
 <?php

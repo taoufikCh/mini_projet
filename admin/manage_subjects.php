@@ -62,7 +62,7 @@ $res=mysqli_query($con, $query);
                                             </td>
                                         </tr>                                        
                                         <div class="modal fade" id="modal_delete<?php echo $data['id_mat']?>" tabindex="-1" aria-hidden="true">
-                                            <div class="modal-dialog modal-dialog-centered"">
+                                            <div class="modal-dialog modal-dialog-centered">
                                                 <div class="modal-content">
                                                 <div class="modal-header">
                                                     <h5 class="modal-title">Suppression d'une matière</h5>

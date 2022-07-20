@@ -17,14 +17,14 @@ $query= mysqli_query($con,$sql);
 if($query ==true)
 {
     //send mail password
-    $msg="Affectation de la matière est effectué avec success ";
+    $msg="Insertion de la séance du cours est effectué avec success ";
     header("Location: manage_course_sessions.php?success=".$msg);
     exit(0);
 
 }
 else
 {
-    $msg="Affectation echoué ";
+    $msg="Insertion echoué ";
     header("Location: manage_course_sessions.php?failed=".$msg);
     exit(0);
 } 

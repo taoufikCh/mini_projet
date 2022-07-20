@@ -15,18 +15,25 @@ WHERE subject_groupe.IdMatiere='".$id_matiere."'";
 
 $res=mysqli_query($con, $query);
 
-$row = mysqli_fetch_assoc($res);
+// $row = mysqli_fetch_assoc($res);
+$list = [];
+foreach($res as $data){
+    //echo $data['idGroupe']." ".$data['nomGroupe']." ".$data['idGroupe']." ".$data['IdMatiere']."</br>"; 
+    array_push($list, $data); 
+}
+$result = [];
+	$result['first_name'] = "John";
+	$result['last_name'] = "Doe";
 
-//foreach($res as $data){
-//    echo $data['idGroupe']." ".$data['nomGroupe']." ".$data['idGroupe']." ".$data['IdMatiere']."</br>";  
-//}
+	echo json_encode($list);
+
 
 //$result['msg']=$res;
 //echo json_encode($result);
 
 //$Response = array('Success' => "Success", 'Content' => $res);
-//echo $row;
-echo json_encode($row);
+//echo $list;
+//echo json_encode($list);
 //exit;
  
 ?>
