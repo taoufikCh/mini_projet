@@ -4,42 +4,41 @@ include('includes/header.php');
 include('includes/navbar.php');
 
 include('config/dbconn.php');
-
-$query_mat="SELECT * from matieres";
-$res_mat=mysqli_query($con, $query_mat);
-
-$sql_info_course="SELECT * from coursesession WHERE id_seance='".$id."'";
-$res_course = mysqli_query($con, $sql_info_course);
-$row = mysqli_fetch_assoc($result);
-
-if($row['status_abs']==="0" && $row['date_seance'] <= '' && $row['heure_fin'] <= ''){
-    $sql="SELECT * from etudiant WHERE groupe='".$row['id_groupe']."'";
-    $students=mysqli_query($con, $sql);
-    foreach($students as $data){
-        $sql = "INSERT INTO `matieres`( `nom_mat`, `coefMat`, `NbreHeureCours`, `NbreHeureTP`) VALUES 
-        ('$name', '$coef', '$cours', '$tp' )";
-        $query= mysqli_query($con,$sql);
-    }
-}
-
-
 $id=$_GET['id_seance'];
 
-$query="SELECT coursesession.*, matieres.nom_mat, groupe. from coursesession
-LEFT JOIN matieres ON coursesession.IdMatiere = matieres.id_mat WHERE subject_groupe.idGroupe='".$id."'";
-$res=mysqli_query($con, $query);
+$id_ens=$_SESSION['auth_user']['codeuser'];
 
-$sql_info_course="SELECT * from coursesession WHERE id_seance='".$id."'";
-$res_course = mysqli_query($con, $sql_info_course);
-$row = mysqli_fetch_assoc($result);
+//$sql_info_course="SELECT * from coursesession WHERE id_seance='".$id."'";
+$query_course="SELECT coursesession.*, matieres.nom_mat, groupe.nomGroupe from coursesession
+LEFT JOIN matieres ON coursesession.id_matiere = matieres.id_mat
+LEFT JOIN groupe ON coursesession.id_groupe = groupe.idGroupe  WHERE coursesession.id_seance='".$id."' and id_ens='".$id_ens."'";
 
-$sql_groupe="SELECT * from groupe WHERE idGroupe='".$row['id_groupe']."'";
-$res_groupe = mysqli_query($con, $sql_groupe) or die ( mysqli_error());
-$groupe = mysqli_fetch_assoc($res_groupe);
+//$row = mysqli_fetch_assoc($con, $res_course);
 
-$sql="SELECT * from etudiant WHERE groupe='".$row['id_groupe']."'";
-$students=mysqli_query($con, $sql);
- 
+$res_course = mysqli_query($con, $query_course) or die (mysqli_error($con));
+$row = mysqli_fetch_assoc($res_course);
+
+if($row['status_abs']==="0"){
+    $date_course = new DateTime($row['date_seance'].' '.$row['heure_fin']) ;
+    $now = new DateTime("now");
+    if($date_course <= $now) {
+        $sql="SELECT * from etudiant WHERE groupe='".$row['id_groupe']."'";
+        $students=mysqli_query($con, $sql);
+        foreach($students as $data){
+            $id_course = $row['id_seance'];
+            $id_etudiant = $data['numEtd'];
+            $sql_insert = "INSERT INTO `assiduite`(`id_course`, `id_etudiant`) VALUES ('$id_course', '$id_etudiant')";
+            $query= mysqli_query($con,$sql_insert);
+        }
+        $update = "UPDATE `coursesession` SET status_abs='1' WHERE id_seance='$id_course'"; 
+        $sql2=mysqli_query($con,$update);
+    } 
+}
+
+$query_assid="SELECT assiduite.*, etudiant.* from assiduite
+LEFT JOIN etudiant ON assiduite.id_etudiant = etudiant.numEtd WHERE assiduite.id_course='".$id."'";
+$res_assuiduite=mysqli_query($con, $query_assid);
+    
 ?>
 
  <!-- Begin Page Content -->
@@ -49,7 +48,7 @@ $students=mysqli_query($con, $sql);
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Suivi Absences</h6>
+            <h6 class="m-0 font-weight-bold text-primary">Information sur la séance du cours</h6>
         </div>
         <?php if(isset($_GET['success'])){
                 echo '<div class="card bg-success text-white shadow"><div class="card-body">'.$_GET['success'].'</div></div>';
@@ -58,174 +57,152 @@ $students=mysqli_query($con, $sql);
                                 echo '<div class="card bg-danger text-white shadow"><div class="card-body">'.$_GET['failed'].'</div></div>';
                         } ?>
         <div class="card-body">
-            <div style="background-color:#fddddd">
-                <h5>Information sur la séance du cours</h5>
-                <div class="mb-3 row">
-                <label class="col-md-3 form-label">Nom du groupe : </label>
-                <div class="col-md-3"><?php echo $data['nomGroupe']; ?></div>
-                <label class="col-md-3 form-label">Date de création : </label>
-                <div class="col-md-3"><?php echo $data['dateCreation']; ?></div>
-                </div>  
-            </div>
-            <div style="color:#000">
-                <b>Information sur l'enseignant</b><br>
-                <table class="table"  width="100%" cellspacing="0">
-                    <thead>
-                        <tr>
-                            <th>Prénom</th>
-                            <th>Nom</th>
-                            <th>Date naissance</th>
-                            <th>Email</th>
-                            <th>Date Embauche</th>
-                            <th>Grade</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr style="background-color:#fddddd">
-                            <td><?php echo $data['prenom']; ?></td>
-                            <td><?php echo $data['nom']; ?></td>
-                            <td><?php echo $data['dateNaissance']; ?></td>
-                            <td><?php echo $data['adresseMail']; ?></td>
-                            <td><?php echo $data['dateEmbauche']; ?></td>
-                            <td><?php echo $data['grade']; ?></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div> 
-            <div class="card shadow mb-4">
-                            <div class="card-header py-3">
-                                <h6 class="m-0 font-weight-bold text-primary">Les matières</h6>
-                            </div>
-                           
-                            <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-bordered" width="100%" cellspacing="0">
-                                    <thead>
-                                        <tr>
-                                            <th>ID</th>
-                                            <th>Matière</th>
-                                            <th>Operations</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php $i = 0;
-                                        foreach($res as $data){
-                                            $i++; ?>
-                                        <tr>
-                                            <td><?php echo $i; ?></td>
-                                            <td><?php echo $data['nom_mat']; ?></td>
-                                            <td>
-                                                <a href="" data-target="#modal_delete<?php echo $data['idSG']?>" data-toggle="modal" class="icon-lg text-danger ">
-                                                    <i class="fas fa-trash"></i>
-                                                </a>    
-                                            </td>
-                                        </tr>                                        
-                                        <div class="modal fade" id="modal_delete<?php echo $data['idSG']?>" tabindex="-1" aria-hidden="true">
-                                            <div class="modal-dialog modal-dialog-centered">
-                                                <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title">Suppression d'une matière</h5>
-                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                    <span aria-hidden="true">&times;</span>
-                                                    </button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <b><span class="text-danger">Souhaitez -vous supprimer cette affectation!</span></b>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <a type="button" class="btn btn-danger" href="delete_subject_groupe.php?id_sub=<?php echo $data['idSG']?>&id_groupe=<?php echo $id?>">Supprimer</a>
-                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
-                                                    
-                                                </div>
-                                                </div>
-                                            </div>
-                                            </div>
-                                        <?php } ?>
-                                    </tbody>
-                                </table>
-                            </div>
-                            </div>
-                        </div>
-                        <div class="card shadow mb-4">
-                            <div class="card-header py-3">
-                                <h6 class="m-0 font-weight-bold text-primary">Les étudiants du groupe</h6>
-                            </div>
-                            
-                            <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-bordered" id="" width="100%" cellspacing="0">
-                                    <thead>
-                                        <tr>
-                                            <th>ID</th>
-                                            <th>Prénom</th>
-                                            <th>Nom</th>
-                                            <th>Email</th>
-                                            <th>Num Inscription</th>
-                                            <th>Date Inscription</th>
-                                        </tr>
-                                    </thead>
-                                   
-                                    <tbody>
-                                        <?php foreach($student as $data){ ?>
-                                        <tr>
-                                            <td><?php echo $data['numEtd']; ?></td>
-                                            <td><?php echo $data['prenomEtd']; ?></td>
-                                            <td><?php echo $data['nomEtd']; ?></td>
-                                            <td><?php echo $data['adresseMailEtd']; ?></td>
-                                            <td><?php echo $data['numInscription']; ?></td>
-                                            <td><?php echo $data['dateInscription']; ?></td>
-                                        </tr>                                        
-                                        
-                                        <?php } ?>
-                                    </tbody>
-                                </table>
-                            </div>
-                            </div>
-                        </div>
-                       
-                            
-                            
-                        </div>
-                    </div>
-</div>
-<!-- /.container-fluid -->
-<div class="modal fade" id="modal_add" tabindex="-1" aria-hidden="true">
-          <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content">
-           <div class="modal-header">
-                    <h5 class="modal-title">Affecter une matière à un groupe</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                     </button>
-                   </div>
-                   <form id="" action="save_subject_groupe.php" method="post"> 
-                     <div class="modal-body">
-                     
-                            <input type="hidden"  id="id_groupe" name="id_groupe" value="<?php echo $id; ?>" required>
-                            <div class="mb-4 row">
-                            <label for="subject" class="col-md-4 form-label" style="color:#000"><b>Choisir une matière : </b></label>
-                            <div class="col-md-8">
-                                <select name="subject" id="subject" class="form-control" required>
-                                    <option value=""><--Choisir--></option>
-                                    <?php foreach($res_mat as $mat){ ?>
-                                        <option value="<?php echo $mat['id_mat'] ?>"><?php echo $mat['nom_mat']; ?></option>
-                                <?php } ?>  
-                                </select>
-                            </div>
-                            </div>
+            <?php if($id_ens===$row['id_ens']){ ?>
+                <div style="color:#000">
+                    <table class="table"  width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Matière</th>
+                                <th>Type</th>
+                                <th>Date</th>
+                                <th>Heure début</th>
+                                <th>Heure fin</th>
+                                <th>Groupe</th>
+                                <th>Test </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="background-color:#fddddd">
+                                <td><?php echo $row['nom_mat']; ?></td>
+                                <td>
+                                    <?php if($row['type_seance']=="1") echo "Cours";
+                                        if($row['type_seance']=="2") echo "TP";  ?>
+                                </td>
+                                <td><?php echo $row['date_seance']; ?></td>
+                                <td><?php echo $row['heure_debut']; ?></td>
+                                <td><?php echo $row['heure_fin']; ?></td>
+                                <td><?php echo $row['nomGroupe']; ?></td>
+                                <td>
+                                    <?php if($row['test_evaluation']=="0") echo "Non";
+                                        if($row['test_evaluation']=="1") echo "Oui";  ?>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div> 
             
-           
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Suivi Absences</h6>
                     </div>
-                   <div class="modal-footer">
-                   <button type="submit" class="btn btn-danger">Affecter</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
-                                                    
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered" id="" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Nom</th>
+                                        <th>Prénom</th>
+                                        <th>Absence</th>
+                                        <th>Note Test</th>
+                                    </tr>
+                                </thead>
+                            <tbody>
+                                <?php foreach($res_assuiduite as $data){ ?>
+                                    <tr>
+                                        <td><?php echo $data['numEtd']; ?></td>
+                                        <td><?php echo $data['nomEtd']; ?></td>
+                                        <td><?php echo $data['prenomEtd']; ?></td>
+                                        <td><input type="checkbox" id="sltAbs<?php echo $data['id_assiduite']; ?>" onchange="updateAbsence(<?php echo $data['id_assiduite']; ?>)" <?php if($data['isAbsent']==="1") echo "checked" ?> > </td>
+                                        <td><?php if($row['test_evaluation']=="1"){?>
+                                            <input type="number" min="0" max="20.00"  pattern="[0-9]+([\,|\.][0-9]+)?" value="<?php echo $data['note_test']; ?>"  id="note_test<?php echo $data['id_assiduite']; ?>" onKeyUp="functionNote(<?php echo $data['id_assiduite']; ?>)" > 
+                                            <a style="display: none" id="dvBtn<?php echo $data['id_assiduite']; ?>" href="#" class="btn btn-success btn-circle btn-sm" onClick="updateNote(<?php echo $data['id_assiduite']; ?>)">
+                                                <i class="fas fa-check"></i>
+                                            </a>
+                                            <?php } ?> 
+                                        </td>
+                                    </tr>                                        
+                                <?php } ?>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
+                <?php } 
+                    else {
+                            echo '<div class="card bg-danger text-white shadow"><div class="card-body">Accès interdit</div></div>';
+                    } ?>
             </div>
-        </form> 
+        </div>
     </div>
 </div>
 
+<script>
+    function updateAbsence(id){
+        //alert(id);
+        var getStatus = $("#sltAbs"+id).is(":checked");
+        //alert(test);
+        var isAbsent=0;
+        if(getStatus) isAbsent=1;
+        //alert(isAbsent);
+
+        $.ajax({
+        url: 'updateStatusAbsent.php',
+        method: 'post',
+        data: {id: id, absent: isAbsent},
+        success: function(response){
+            if(response){
+                //alert('ok');
+                tata['success']("Success", "La mise à jour a été effectuée avec succès", {
+                    
+                    duration: 3000,
+                    position: 'tr',
+                    progress: true,
+                    holding: $('input[name=holding]').checked,
+                    animate: 'fade',
+                    closeBtn: true,
+                })
+            }
+            else{ 
+                tata['danger']("Echec", "La mise à jour est échoué", {
+                    
+                    duration: 3000,
+                    position: 'tr',
+                    progress: true,
+                    holding: $('input[name=holding]').checked,
+                    animate: 'fade',
+                    closeBtn: true,
+                })
+            }
+        },
+        error: function(xhr, status, error){
+        //console.error(xhr);
+        alert("ko");
+        }
+      });
+    }
+    function functionNote(id){
+        
+        var note = $("#note_test"+id).val();
+        if(note==="" || note<0){
+            $("#note_test"+id).val(0);
+        }
+        else if(note>20){
+            $("#note_test"+id).val(20);
+        }
+        else {
+            $("#note_test"+id).val(parseFloat(note));
+        }
+        $('#dvBtn'+id).show(); 
+    }
+   
+    
+    function updateNote(id){
+        alert(id);
+        var note = $("#note_test"+id).val();
+        alert(note);
+    }
+  
+</script>
 <?php
 include('includes/footer.php');
 include('includes/scripts.php');
