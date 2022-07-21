@@ -8,21 +8,37 @@ include('config/dbconn.php');
 $query_mat="SELECT * from matieres";
 $res_mat=mysqli_query($con, $query_mat);
 
+$sql_info_course="SELECT * from coursesession WHERE id_seance='".$id."'";
+$res_course = mysqli_query($con, $sql_info_course);
+$row = mysqli_fetch_assoc($result);
 
-$id=$_GET['id_groupe'];
+if($row['status_abs']==="0" && $row['date_seance'] <= '' && $row['heure_fin'] <= ''){
+    $sql="SELECT * from etudiant WHERE groupe='".$row['id_groupe']."'";
+    $students=mysqli_query($con, $sql);
+    foreach($students as $data){
+        $sql = "INSERT INTO `matieres`( `nom_mat`, `coefMat`, `NbreHeureCours`, `NbreHeureTP`) VALUES 
+        ('$name', '$coef', '$cours', '$tp' )";
+        $query= mysqli_query($con,$sql);
+    }
+}
 
-$query="SELECT subject_groupe.*, matieres.nom_mat from subject_groupe
-LEFT JOIN matieres ON subject_groupe.IdMatiere = matieres.id_mat WHERE subject_groupe.idGroupe='".$id."'";
 
+$id=$_GET['id_seance'];
 
+$query="SELECT coursesession.*, matieres.nom_mat, groupe. from coursesession
+LEFT JOIN matieres ON coursesession.IdMatiere = matieres.id_mat WHERE subject_groupe.idGroupe='".$id."'";
 $res=mysqli_query($con, $query);
 
-$query2="SELECT * from groupe WHERE idGroupe='".$id."'";
-$result = mysqli_query($con, $query2) or die ( mysqli_error());
-$data = mysqli_fetch_assoc($result);
+$sql_info_course="SELECT * from coursesession WHERE id_seance='".$id."'";
+$res_course = mysqli_query($con, $sql_info_course);
+$row = mysqli_fetch_assoc($result);
 
-$sql="SELECT * from etudiant WHERE groupe='".$id."'";
-$student=mysqli_query($con, $sql);
+$sql_groupe="SELECT * from groupe WHERE idGroupe='".$row['id_groupe']."'";
+$res_groupe = mysqli_query($con, $sql_groupe) or die ( mysqli_error());
+$groupe = mysqli_fetch_assoc($res_groupe);
+
+$sql="SELECT * from etudiant WHERE groupe='".$row['id_groupe']."'";
+$students=mysqli_query($con, $sql);
  
 ?>
 
