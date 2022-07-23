@@ -1,13 +1,14 @@
 -- phpMyAdmin SQL Dump
--- version 5.1.3
+-- version 4.9.0.1
 -- https://www.phpmyadmin.net/
 --
--- Hôte : 127.0.0.1
--- Généré le : ven. 22 juil. 2022 à 01:07
--- Version du serveur : 10.4.24-MariaDB
--- Version de PHP : 7.4.29
+-- Host: 127.0.0.1
+-- Generation Time: Jul 23, 2022 at 12:56 PM
+-- Server version: 10.4.6-MariaDB
+-- PHP Version: 7.3.9
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
 
@@ -18,13 +19,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de données : `gestabsence`
+-- Database: `gestabsence`
 --
 
 -- --------------------------------------------------------
 
 --
--- Structure de la table `assiduite`
+-- Table structure for table `assiduite`
 --
 
 CREATE TABLE `assiduite` (
@@ -35,20 +36,22 @@ CREATE TABLE `assiduite` (
   `proof` varchar(200) NOT NULL,
   `note_test` varchar(10) NOT NULL,
   `remark` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Déchargement des données de la table `assiduite`
+-- Dumping data for table `assiduite`
 --
 
 INSERT INTO `assiduite` (`id_assiduite`, `id_course`, `id_etudiant`, `isAbsent`, `proof`, `note_test`, `remark`) VALUES
-(1, 1, 1, 1, '', '', ''),
-(2, 1, 4, 1, '', '', '');
+(1, 2, 5, 1, '', '0.50', ''),
+(2, 2, 6, 0, '', '12.57', ''),
+(3, 4, 5, 0, '', '', ''),
+(4, 4, 6, 0, '', '', '');
 
 -- --------------------------------------------------------
 
 --
--- Structure de la table `coursesession`
+-- Table structure for table `coursesession`
 --
 
 CREATE TABLE `coursesession` (
@@ -65,16 +68,19 @@ CREATE TABLE `coursesession` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Déchargement des données de la table `coursesession`
+-- Dumping data for table `coursesession`
 --
 
 INSERT INTO `coursesession` (`id_seance`, `id_matiere`, `id_groupe`, `id_ens`, `date_seance`, `heure_debut`, `heure_fin`, `type_seance`, `test_evaluation`, `status_abs`) VALUES
-(1, 2, 3, 3, '2022-01-11', '10:00:00', '12:00:00', 1, 1, 1);
+(2, 2, 3, 3, '2022-01-01', '12:00:00', '13:00:00', 2, 1, 1),
+(3, 2, 3, 3, '2022-01-02', '09:00:00', '12:30:00', 1, 1, 0),
+(4, 2, 3, 3, '2022-01-03', '09:00:00', '11:30:00', 1, 1, 1),
+(5, 2, 1, 3, '2022-01-04', '09:00:00', '11:00:00', 1, 0, 0);
 
 -- --------------------------------------------------------
 
 --
--- Structure de la table `enseignant`
+-- Table structure for table `enseignant`
 --
 
 CREATE TABLE `enseignant` (
@@ -90,7 +96,7 @@ CREATE TABLE `enseignant` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Déchargement des données de la table `enseignant`
+-- Dumping data for table `enseignant`
 --
 
 INSERT INTO `enseignant` (`numEns`, `nom`, `prenom`, `dateNaissance`, `photo`, `adresseMail`, `dateEmbauche`, `grade`, `password`) VALUES
@@ -100,7 +106,7 @@ INSERT INTO `enseignant` (`numEns`, `nom`, `prenom`, `dateNaissance`, `photo`, `
 -- --------------------------------------------------------
 
 --
--- Structure de la table `etudiant`
+-- Table structure for table `etudiant`
 --
 
 CREATE TABLE `etudiant` (
@@ -118,7 +124,7 @@ CREATE TABLE `etudiant` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Déchargement des données de la table `etudiant`
+-- Dumping data for table `etudiant`
 --
 
 INSERT INTO `etudiant` (`numEtd`, `nomEtd`, `prenomEtd`, `DateNaissanceEtd`, `photoEtd`, `adresseMailEtd`, `numInscription`, `dateInscription`, `au`, `password`, `groupe`) VALUES
@@ -130,7 +136,7 @@ INSERT INTO `etudiant` (`numEtd`, `nomEtd`, `prenomEtd`, `DateNaissanceEtd`, `ph
 -- --------------------------------------------------------
 
 --
--- Structure de la table `groupe`
+-- Table structure for table `groupe`
 --
 
 CREATE TABLE `groupe` (
@@ -141,7 +147,7 @@ CREATE TABLE `groupe` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Déchargement des données de la table `groupe`
+-- Dumping data for table `groupe`
 --
 
 INSERT INTO `groupe` (`idGroupe`, `nomGroupe`, `dateCreation`, `au`) VALUES
@@ -151,7 +157,7 @@ INSERT INTO `groupe` (`idGroupe`, `nomGroupe`, `dateCreation`, `au`) VALUES
 -- --------------------------------------------------------
 
 --
--- Structure de la table `matieres`
+-- Table structure for table `matieres`
 --
 
 CREATE TABLE `matieres` (
@@ -163,7 +169,7 @@ CREATE TABLE `matieres` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Déchargement des données de la table `matieres`
+-- Dumping data for table `matieres`
 --
 
 INSERT INTO `matieres` (`id_mat`, `nom_mat`, `coefMat`, `NbreHeureCours`, `NbreHeureTP`) VALUES
@@ -177,7 +183,7 @@ INSERT INTO `matieres` (`id_mat`, `nom_mat`, `coefMat`, `NbreHeureCours`, `NbreH
 -- --------------------------------------------------------
 
 --
--- Structure de la table `subject_affected`
+-- Table structure for table `subject_affected`
 --
 
 CREATE TABLE `subject_affected` (
@@ -187,7 +193,7 @@ CREATE TABLE `subject_affected` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Déchargement des données de la table `subject_affected`
+-- Dumping data for table `subject_affected`
 --
 
 INSERT INTO `subject_affected` (`idSA`, `idEns`, `idMat`) VALUES
@@ -195,12 +201,14 @@ INSERT INTO `subject_affected` (`idSA`, `idEns`, `idMat`) VALUES
 (5, 1, 6),
 (7, 1, 8),
 (8, 3, 2),
-(9, 3, 7);
+(9, 3, 7),
+(10, 3, 1),
+(11, 3, 6);
 
 -- --------------------------------------------------------
 
 --
--- Structure de la table `subject_groupe`
+-- Table structure for table `subject_groupe`
 --
 
 CREATE TABLE `subject_groupe` (
@@ -210,19 +218,20 @@ CREATE TABLE `subject_groupe` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Déchargement des données de la table `subject_groupe`
+-- Dumping data for table `subject_groupe`
 --
 
 INSERT INTO `subject_groupe` (`idSG`, `idGroupe`, `IdMatiere`) VALUES
 (1, 1, 1),
 (2, 3, 6),
 (4, 1, 6),
-(5, 3, 2);
+(5, 3, 2),
+(6, 1, 2);
 
 -- --------------------------------------------------------
 
 --
--- Structure de la table `users`
+-- Table structure for table `users`
 --
 
 CREATE TABLE `users` (
@@ -235,124 +244,124 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Déchargement des données de la table `users`
+-- Dumping data for table `users`
 --
 
 INSERT INTO `users` (`codeuser`, `prenom`, `nom`, `mail`, `password`, `userrole`) VALUES
 (1, 'Taouik', 'Chenini', 'taoufikchenini@gmail.com', 'e10adc3949ba59abbe56e057f20f883e', 1);
 
 --
--- Index pour les tables déchargées
+-- Indexes for dumped tables
 --
 
 --
--- Index pour la table `assiduite`
+-- Indexes for table `assiduite`
 --
 ALTER TABLE `assiduite`
   ADD PRIMARY KEY (`id_assiduite`);
 
 --
--- Index pour la table `coursesession`
+-- Indexes for table `coursesession`
 --
 ALTER TABLE `coursesession`
   ADD PRIMARY KEY (`id_seance`);
 
 --
--- Index pour la table `enseignant`
+-- Indexes for table `enseignant`
 --
 ALTER TABLE `enseignant`
   ADD PRIMARY KEY (`numEns`);
 
 --
--- Index pour la table `etudiant`
+-- Indexes for table `etudiant`
 --
 ALTER TABLE `etudiant`
   ADD PRIMARY KEY (`numEtd`);
 
 --
--- Index pour la table `groupe`
+-- Indexes for table `groupe`
 --
 ALTER TABLE `groupe`
   ADD PRIMARY KEY (`idGroupe`);
 
 --
--- Index pour la table `matieres`
+-- Indexes for table `matieres`
 --
 ALTER TABLE `matieres`
   ADD PRIMARY KEY (`id_mat`);
 
 --
--- Index pour la table `subject_affected`
+-- Indexes for table `subject_affected`
 --
 ALTER TABLE `subject_affected`
   ADD PRIMARY KEY (`idSA`);
 
 --
--- Index pour la table `subject_groupe`
+-- Indexes for table `subject_groupe`
 --
 ALTER TABLE `subject_groupe`
   ADD PRIMARY KEY (`idSG`);
 
 --
--- Index pour la table `users`
+-- Indexes for table `users`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`codeuser`);
 
 --
--- AUTO_INCREMENT pour les tables déchargées
+-- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT pour la table `assiduite`
+-- AUTO_INCREMENT for table `assiduite`
 --
 ALTER TABLE `assiduite`
-  MODIFY `id_assiduite` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_assiduite` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT pour la table `coursesession`
+-- AUTO_INCREMENT for table `coursesession`
 --
 ALTER TABLE `coursesession`
-  MODIFY `id_seance` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_seance` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT pour la table `enseignant`
+-- AUTO_INCREMENT for table `enseignant`
 --
 ALTER TABLE `enseignant`
   MODIFY `numEns` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT pour la table `etudiant`
+-- AUTO_INCREMENT for table `etudiant`
 --
 ALTER TABLE `etudiant`
   MODIFY `numEtd` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- AUTO_INCREMENT pour la table `groupe`
+-- AUTO_INCREMENT for table `groupe`
 --
 ALTER TABLE `groupe`
   MODIFY `idGroupe` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT pour la table `matieres`
+-- AUTO_INCREMENT for table `matieres`
 --
 ALTER TABLE `matieres`
   MODIFY `id_mat` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
--- AUTO_INCREMENT pour la table `subject_affected`
+-- AUTO_INCREMENT for table `subject_affected`
 --
 ALTER TABLE `subject_affected`
-  MODIFY `idSA` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `idSA` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
--- AUTO_INCREMENT pour la table `subject_groupe`
+-- AUTO_INCREMENT for table `subject_groupe`
 --
 ALTER TABLE `subject_groupe`
-  MODIFY `idSG` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `idSG` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- AUTO_INCREMENT pour la table `users`
+-- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
   MODIFY `codeuser` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
