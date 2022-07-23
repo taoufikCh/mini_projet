@@ -115,10 +115,11 @@ $res_assuiduite=mysqli_query($con, $query_assid);
                                         <td><?php echo $data['prenomEtd']; ?></td>
                                         <td><input type="checkbox" id="sltAbs<?php echo $data['id_assiduite']; ?>" onchange="updateAbsence(<?php echo $data['id_assiduite']; ?>)" <?php if($data['isAbsent']==="1") echo "checked" ?> > </td>
                                         <td><?php if($row['test_evaluation']=="1"){?>
-                                            <input type="number" min="0" max="20.00"  pattern="[0-9]+([\,|\.][0-9]+)?" value="<?php echo $data['note_test']; ?>"  id="note_test<?php echo $data['id_assiduite']; ?>" onKeyUp="functionNote(<?php echo $data['id_assiduite']; ?>)" > 
+                                            <input type="number"  min="0" max="20.00" pattern="^\d+(?:\.\d{1,2})?$" step="0.01"  value="<?php echo $data['note_test']; ?>"  id="note_test<?php echo $data['id_assiduite']; ?>" onchange="ValidationNote(<?php echo $data['id_assiduite']; ?>)"  onkeyup="ValidationNote(<?php echo $data['id_assiduite']; ?>)"> 
                                             <a style="display: none" id="dvBtn<?php echo $data['id_assiduite']; ?>" href="#" class="btn btn-success btn-circle btn-sm" onClick="updateNote(<?php echo $data['id_assiduite']; ?>)">
                                                 <i class="fas fa-check"></i>
                                             </a>
+                                            
                                             <?php } ?> 
                                         </td>
                                     </tr>                                        
@@ -180,26 +181,76 @@ $res_assuiduite=mysqli_query($con, $query_assid);
         }
       });
     }
-    function functionNote(id){
+    function ValidationNote(id){
         
-        var note = $("#note_test"+id).val();
-        if(note==="" || note<0){
+        var note = parseFloat($("#note_test"+id).val());
+        
+        $('#dvBtn'+id).show();
+        //if(note===""){
+          //  $("#note_test"+id).val(0);
+        //}
+        if(note<0){
             $("#note_test"+id).val(0);
         }
         else if(note>20){
             $("#note_test"+id).val(20);
         }
         else {
-            $("#note_test"+id).val(parseFloat(note));
+            //$("#note_test"+id).val(note.toFixed(2));
+           
         }
-        $('#dvBtn'+id).show(); 
+         
     }
    
     
     function updateNote(id){
-        alert(id);
-        var note = $("#note_test"+id).val();
-        alert(note);
+        console.log(id);
+        var note = parseFloat($("#note_test"+id).val());
+        console.log(note);
+        note = note.toFixed(2);
+        console.log(note);
+
+        $.ajax({
+        url: 'updateNoteTest.php',
+        method: 'post',
+        data: {id: id, note: note},
+        success: function(response){
+
+            console.log("response "+response);
+            if(response){
+                //alert('ok');
+
+                
+
+                tata['success']("Success", "La mise à jour a été effectuée avec succès", {
+                    
+                    duration: 3000,
+                    position: 'tr',
+                    progress: true,
+                    holding: $('input[name=holding]').checked,
+                    animate: 'fade',
+                    closeBtn: true,
+                })
+                $("#note_test"+id).val(note.toFixed(2));
+                $('#dvBtn'+id).hide();
+            }
+            else{ 
+                tata['warning']("Echec", "La mise à jour est échoué", {
+                    
+                    duration: 3000,
+                    position: 'tr',
+                    progress: true,
+                    holding: $('input[name=holding]').checked,
+                    animate: 'fade',
+                    closeBtn: true,
+                })
+            }
+        },
+        error: function(xhr, status, error){
+        //console.error(xhr);
+        alert("ko");
+        }
+      });
     }
   
 </script>

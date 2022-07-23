@@ -6,9 +6,10 @@ include('includes/navbar.php');
 include('config/dbconn.php');
 
 //$query="SELECT * from coursesession";
+$id_ens = $_SESSION['auth_user']['codeuser'];
 $query="SELECT coursesession.*, matieres.nom_mat, groupe.nomGroupe 
     from coursesession LEFT JOIN matieres ON coursesession.id_matiere = matieres.id_mat
-    LEFT JOIN groupe ON coursesession.id_groupe = groupe.idGroupe ";
+    LEFT JOIN groupe ON coursesession.id_groupe = groupe.idGroupe where id_ens='".$id_ens."'";
 
 $res=mysqli_query($con, $query);
  
