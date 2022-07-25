@@ -34,6 +34,17 @@ if($row['status_abs']==="0"){
         $sql2=mysqli_query($con,$update);
     } 
 }
+/*else{
+    
+    $sql="SELECT * from etudiant WHERE groupe='".$row['id_groupe']."'";
+    $students=mysqli_query($con, $sql);
+    foreach($students as $data){
+        $id_course = $row['id_seance'];
+        $id_etudiant = $data['numEtd'];
+        $sql_insert = "INSERT INTO `assiduite`(`id_course`, `id_etudiant`) VALUES ('$id_course', '$id_etudiant')";
+            $query= mysqli_query($con,$sql_insert);
+    }
+} */
 
 $query_assid="SELECT assiduite.*, etudiant.* from assiduite
 LEFT JOIN etudiant ON assiduite.id_etudiant = etudiant.numEtd WHERE assiduite.id_course='".$id."'";
@@ -153,6 +164,7 @@ $res_assuiduite=mysqli_query($con, $query_assid);
         success: function(response){
             if(response){
                 //alert('ok');
+                $("#note_test"+id).val('0');
                 tata['success']("Success", "La mise à jour a été effectuée avec succès", {
                     
                     duration: 3000,
@@ -164,7 +176,7 @@ $res_assuiduite=mysqli_query($con, $query_assid);
                 })
             }
             else{ 
-                tata['danger']("Echec", "La mise à jour est échoué", {
+                tata['error']("Echec", "La mise à jour est échoué", {
                     
                     duration: 3000,
                     position: 'tr',
@@ -231,11 +243,12 @@ $res_assuiduite=mysqli_query($con, $query_assid);
                     animate: 'fade',
                     closeBtn: true,
                 })
-                $("#note_test"+id).val(note.toFixed(2));
                 $('#dvBtn'+id).hide();
+                $("#note_test"+id).val(note);
+                
             }
             else{ 
-                tata['warning']("Echec", "La mise à jour est échoué", {
+                tata['error']("Echec", "La mise à jour est échoué", {
                     
                     duration: 3000,
                     position: 'tr',

@@ -12,12 +12,17 @@ $update = "UPDATE `assiduite` SET isAbsent='$isAbsent' WHERE id_assiduite='$id_a
 
 if($sql2 ==true)
 {
-   return true;
+    if($isAbsent==="1")
+    { 
+        $updatenote = "UPDATE `assiduite` SET note_test='0' WHERE id_assiduite='$id_assiduite'";
+        mysqli_query($con,$updatenote); 
+    }
+   echo true;
 
 }
 else
 {
-    return false;
+    echo false;
 } 
 
 ?>
