@@ -21,6 +21,16 @@ if(ISSET($_REQUEST['id_row'])){
             $delete_course = "DELETE FROM `coursesession` WHERE id_groupe='$id'";
             mysqli_query($con,$delete_course);
         }
+        $list_student="SELECT * from etudiant WHERE groupe='$id'";
+        $res_student=mysqli_query($con, $list_student);
+        if($res_student){
+            foreach($res_student as $data){
+                $update_student = "UPDATE `etudiant` SET groupe='' WHERE numEtd='".$data['numEtd']."'"; 
+                mysqli_query($con,$update_student);
+            }
+        }
+        $delete_sub_gr = "DELETE FROM `subject_groupe` WHERE idGroupe ='$id'";
+        mysqli_query($con,$delete_sub_gr);
 
         $msg="Suppression du groupe est effectué avec success ";
         header("Location: manage_groupe.php?success=".$msg);

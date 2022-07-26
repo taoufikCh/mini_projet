@@ -9,3 +9,10 @@
     die();
     }
 ?>
+
+$host="localhost";
+    $username="id19329503_root_gr10";
+    $password="MPdsir2022@@";
+    $database="id19329503_gestabsence";
+    
+    https://suiviabsence.000webhostapp.com/

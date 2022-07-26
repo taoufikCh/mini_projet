@@ -10,7 +10,7 @@ include('includes/header.php');
  <div class="col-md-5">
  <div class="card">
  <div class="card-header">
- <h4>Connexion</h4>
+ <h4 class="font-weight-bold text-center text-info">Connexion</h4>
  </div>
  <div class="card-body">
  <form action="logincode.php" method="POST">
@@ -18,17 +18,17 @@ include('includes/header.php');
         echo '<div class="card bg-danger text-white shadow"><div class="card-body">'.$_SESSION['message'].'</div></div>';
     } ?>
  <div class="form-group mb-3">
- <label>Email ID</label>
+ <label class="font-weight-bold text-primary">Email ID</label>
  <input type="text" name="email" required
 placeholder="Saisir votre adresse mail"
  class="form-control">
  </div>
 <div class="form-group mb-3">
- <label>Mot de passe</label>
+ <label class="font-weight-bold text-primary">Mot de passe</label>
  <input type="password" name="password" required placeholder="Saisir votre mot de passe" class="form-control">
 </div>
 <div class="form-group mb-3">
- <label>Vous êtes </label>
+ <label class="font-weight-bold text-primary">Vous êtes </label>
  <select name="you_are" id="you_are" class="form-control" required>
         <option value="1">Administrateur</option>
         <option value="2">Enseignant</option>
@@ -36,7 +36,7 @@ placeholder="Saisir votre adresse mail"
   </select>
 </div>
 <div class="form-group mb-3 text-center">
- <button type="submit" name="login_btn" class="btn btn-primary">Se connecter</button>
+ <button type="submit" name="login_btn" class="btn btn-success">Se connecter</button>
  </div>
  </form>
  </div>
