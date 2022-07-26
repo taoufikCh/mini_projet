@@ -13,7 +13,17 @@ $id_ens=$_SESSION['auth_user']['codeuser'];
 $sql = "INSERT INTO `coursesession`(  `id_matiere`, `id_groupe`, `id_ens`, `date_seance`, `heure_debut`, `heure_fin`, `type_seance`, `test_evaluation`) VALUES 
 ('$id_matiere', '$id_groupe', '$id_ens', '$date_seance', '$heure_debut', '$heure_fin', '$type_seance', '$test_eval' )";
 $query= mysqli_query($con,$sql);
-//$lastId = mysqli_insert_id($con);
+$lastId = mysqli_insert_id($con);
+if($lastId) {
+    $sql="SELECT * from etudiant WHERE groupe='".$id_groupe."'";
+    $students=mysqli_query($con, $sql);
+    foreach($students as $data){
+        $id_course = $lastId;
+        $id_etudiant = $data['numEtd'];
+        $sql_insert = "INSERT INTO `assiduite`(`id_course`, `id_etudiant`) VALUES ('$id_course', '$id_etudiant')";
+        $query= mysqli_query($con,$sql_insert);
+    }
+} 
 if($query ==true)
 {
     //send mail password

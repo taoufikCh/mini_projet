@@ -6,11 +6,9 @@ include('includes/navbar.php');
 include('config/dbconn.php');
 $id=$_GET['id_seance'];
 
-$id_ens=$_SESSION['auth_user']['codeuser'];
-
 $query_course="SELECT coursesession.*, matieres.nom_mat, groupe.nomGroupe from coursesession
 LEFT JOIN matieres ON coursesession.id_matiere = matieres.id_mat
-LEFT JOIN groupe ON coursesession.id_groupe = groupe.idGroupe  WHERE coursesession.id_seance='".$id."' and id_ens='".$id_ens."'";
+LEFT JOIN groupe ON coursesession.id_groupe = groupe.idGroupe  WHERE coursesession.id_seance='".$id."'";
 $res_course = mysqli_query($con, $query_course) or die (mysqli_error($con));
 $row = mysqli_fetch_assoc($res_course);
 
@@ -59,7 +57,6 @@ $res_assuiduite=mysqli_query($con, $query_assid);
                                 echo '<div class="card bg-danger text-white shadow"><div class="card-body">'.$_GET['failed'].'</div></div>';
                         } ?>
         <div class="card-body">
-            <?php if($id_ens===$row['id_ens']){ ?>
                 <div style="color:#000">
                     <table class="table"  width="100%" cellspacing="0">
                         <thead>
@@ -115,13 +112,9 @@ $res_assuiduite=mysqli_query($con, $query_assid);
                                         <td><?php echo $data['numEtd']; ?></td>
                                         <td><?php echo $data['nomEtd']; ?></td>
                                         <td><?php echo $data['prenomEtd']; ?></td>
-                                        <td><input type="checkbox" id="sltAbs<?php echo $data['id_assiduite']; ?>" onchange="updateAbsence(<?php echo $data['id_assiduite']; ?>)" <?php if($data['isAbsent']==="1") echo "checked" ?> > </td>
+                                        <td><input type="checkbox" disabled id="sltAbs<?php echo $data['id_assiduite']; ?>"  <?php if($data['isAbsent']==="1") echo "checked" ?> > </td>
                                         <td><?php if($row['test_evaluation']=="1"){?>
-                                            <input type="number"  min="0" max="20.00" pattern="^\d+(?:\.\d{1,2})?$" step="0.01"  value="<?php echo $data['note_test']; ?>"  id="note_test<?php echo $data['id_assiduite']; ?>" onchange="ValidationNote(<?php echo $data['id_assiduite']; ?>)"  onkeyup="ValidationNote(<?php echo $data['id_assiduite']; ?>)"> 
-                                            <a style="display: none" id="dvBtn<?php echo $data['id_assiduite']; ?>" href="#" class="btn btn-success btn-circle btn-sm" onClick="updateNote(<?php echo $data['id_assiduite']; ?>)">
-                                                <i class="fas fa-check"></i>
-                                            </a>
-                                            
+                                            <input type="number" disabled   value="<?php echo $data['note_test']; ?>"  > 
                                             <?php } ?> 
                                         </td>
                                     </tr>                                        
@@ -130,133 +123,13 @@ $res_assuiduite=mysqli_query($con, $query_assid);
                         </table>
                     </div>
                 </div>
-                <?php } 
-                    else {
-                            echo '<div class="card bg-danger text-white shadow"><div class="card-body">Accès interdit</div></div>';
-                    } ?>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    function updateAbsence(id){
-        //alert(id);
-        var getStatus = $("#sltAbs"+id).is(":checked");
-        //alert(test);
-        var isAbsent=0;
-        if(getStatus) isAbsent=1;
-        //alert(isAbsent);
-
-        $.ajax({
-        url: 'updateStatusAbsent.php',
-        method: 'post',
-        data: {id: id, absent: isAbsent},
-        success: function(response){
-            if(response){
-                //alert('ok');
-                $("#note_test"+id).val('0');
-                tata['success']("Success", "La mise à jour a été effectuée avec succès", {
-                    
-                    duration: 3000,
-                    position: 'tr',
-                    progress: true,
-                    holding: $('input[name=holding]').checked,
-                    animate: 'fade',
-                    closeBtn: true,
-                })
-            }
-            else{ 
-                tata['error']("Echec", "La mise à jour est échoué", {
-                    
-                    duration: 3000,
-                    position: 'tr',
-                    progress: true,
-                    holding: $('input[name=holding]').checked,
-                    animate: 'fade',
-                    closeBtn: true,
-                })
-            }
-        },
-        error: function(xhr, status, error){
-        //console.error(xhr);
-        alert("ko");
-        }
-      });
-    }
-    function ValidationNote(id){
-        
-        var note = parseFloat($("#note_test"+id).val());
-        
-        $('#dvBtn'+id).show();
-        //if(note===""){
-          //  $("#note_test"+id).val(0);
-        //}
-        if(note<0){
-            $("#note_test"+id).val(0);
-        }
-        else if(note>20){
-            $("#note_test"+id).val(20);
-        }
-        else {
-            //$("#note_test"+id).val(note.toFixed(2));
-           
-        }
-         
-    }
-   
-    
-    function updateNote(id){
-        console.log(id);
-        var note = parseFloat($("#note_test"+id).val());
-        console.log(note);
-        note = note.toFixed(2);
-        console.log(note);
-
-        $.ajax({
-        url: 'updateNoteTest.php',
-        method: 'post',
-        data: {id: id, note: note},
-        success: function(response){
-
-            console.log("response "+response);
-            if(response){
-                //alert('ok');
-
-                
-
-                tata['success']("Success", "La mise à jour a été effectuée avec succès", {
-                    
-                    duration: 3000,
-                    position: 'tr',
-                    progress: true,
-                    holding: $('input[name=holding]').checked,
-                    animate: 'fade',
-                    closeBtn: true,
-                })
-                $('#dvBtn'+id).hide();
-                $("#note_test"+id).val(note);
-                
-            }
-            else{ 
-                tata['error']("Echec", "La mise à jour est échoué", {
-                    
-                    duration: 3000,
-                    position: 'tr',
-                    progress: true,
-                    holding: $('input[name=holding]').checked,
-                    animate: 'fade',
-                    closeBtn: true,
-                })
-            }
-        },
-        error: function(xhr, status, error){
-        //console.error(xhr);
-        alert("ko");
-        }
-      });
-    }
-  
+ 
 </script>
 <?php
 include('includes/footer.php');

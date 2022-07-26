@@ -12,6 +12,8 @@ if(ISSET($_REQUEST['id_student'])){
     if($sql2)
 
     {
+        $delete_assiduite = "DELETE FROM `assiduite` WHERE 	id_etudiant='".$id."'";
+        mysqli_query($con,$delete_assiduite);
         $msg="Suppression de l'étudiant est effectué avec success ";
         header("Location: manage_student.php?success=".$msg);
         exit(0);

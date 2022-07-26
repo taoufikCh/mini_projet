@@ -5,12 +5,19 @@ include('includes/navbar.php');
 
 include('config/dbconn.php');
 
-
 $id_subject = $_POST['subject'];
-$id_groupe = $_POST['groupe'];
+$id_student = $_SESSION['auth_user']['codeuser'];
 
-$id_ens = $_SESSION['auth_user']['codeuser'];
+$query="SELECT groupe from etudiant WHERE numEtd = '$id_student'";
+$res_groupe = mysqli_query($con, $query) or die (mysqli_error($con));
+$row = mysqli_fetch_assoc($res_groupe);
 
+$id_groupe = $row['groupe'];
+
+$sql_subject="SELECT subject_groupe.*, matieres.* from subject_groupe
+LEFT JOIN matieres ON subject_groupe.IdMatiere = matieres.id_mat WHERE subject_groupe.idGroupe='".$id_groupe."'";
+$res_subject=mysqli_query($con, $sql_subject);
+/////
 $query_mat="SELECT * from matieres where id_mat='".$id_subject."'";
 $res_mat=mysqli_query($con, $query_mat);
 $data_mat = mysqli_fetch_assoc($res_mat);
@@ -20,9 +27,9 @@ $res_gr = mysqli_query($con, $query_gr) or die ( mysqli_error());
 $data_gr = mysqli_fetch_assoc($res_gr);
 
 $query_course = "SELECT * from coursesession 
-     where id_matiere='".$id_subject."' and id_groupe='".$id_groupe."' and id_ens='".$id_ens."'";
-
+     where id_matiere='".$id_subject."' and id_groupe='".$id_groupe."' ";
 $res = mysqli_query($con, $query_course);
+
 $heure_cours = 0;
 $heure_tp = 0;
 $nbr_test = 0;
@@ -36,25 +43,32 @@ foreach($res as $info){
     else $heure_tp+= $totalHoursDiff;
 
     if($info['test_evaluation']==="1") {
-        $nbr_test+=1;
-        
+        $nbr_test+=1;   
     }
-    $list_id[] = $info['id_seance'];
-    
+    $list_id[] = $info['id_seance']; 
 
-      
+    $query_assiduite="SELECT * from assiduite WHERE id_course= '".$info['id_seance']."'";
+    $res_assiduite=mysqli_query($con, $query_assiduite);
+    $exist = false;
+    foreach($res_assiduite as $assiduite){
+        if($id_student===$assiduite['id_etudiant'])
+        {
+                $exist = true;
+        }
+    }
+    if(!$exist){
+        $id_course = $info['id_seance'];
+        $id_etudiant = $id_student;
+        $sql_insert = "INSERT INTO `assiduite`(`id_course`, `id_etudiant`) VALUES ('$id_course', '$id_etudiant')";
+        $query= mysqli_query($con,$sql_insert);
+    }
 }
-//echo var_dump($list_id);
 
-$query_assiduite = "SELECT * from assiduite where id_course IN (" . implode(',', array_map('intval', $list_id)) . ") ORDER BY id_etudiant";
-$res_assiduite = mysqli_query($con, $query_assiduite);
+$query_assiduite="SELECT assiduite.* , coursesession.* from assiduite
+LEFT JOIN coursesession ON assiduite.id_course = coursesession.id_seance WHERE assiduite.id_etudiant= '$id_student' and assiduite.id_course IN (" . implode(',', array_map('intval', $list_id)) . ")";
+$res_assiduite=mysqli_query($con, $query_assiduite);
 
-//$query_assd_student = "SELECT DISTINCT assiduite.id_etudiant from assiduite where id_course IN (" . implode(',', array_map('intval', $list_id)) . ") ORDER BY id_etudiant";
-//$res_list_std = mysqli_query($con, $query_assd_student);
-
-$query_assd_student="SELECT DISTINCT assiduite.id_etudiant, etudiant.* from assiduite
-LEFT JOIN etudiant ON assiduite.id_etudiant = etudiant.numEtd WHERE assiduite.id_course IN (" . implode(',', array_map('intval', $list_id)) . ")";
-$res_list_std=mysqli_query($con, $query_assd_student);
+//$len = mysqli_num_rows($res_assiduite);
 
 //echo "nbr student " .$nbr_student;  COUNT ( DISTINCT id_etudiant ) AS nbr_student 
 ?>
@@ -96,62 +110,70 @@ $res_list_std=mysqli_query($con, $query_assd_student);
     </div>
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Les moyennes des étudiants</h6>
+            <h6 class="m-0 font-weight-bold text-primary">Suivi absences et notes </h6>
         </div>
         <div class="card-body" >
-           <?php $inf_10 = 0;
+           <?php $nbr_abs = 0;
            $sup_10 = 0;
            ?>
            <table class="table"  width="100%" cellspacing="0">
                 <thead>
                     <tr>
-                        <th>Nom</th>
-                        <th>Prénom</th>
-                        <th>Les notes</th>
-                        <th>Somme des notes</th>
-                        <th>Moyenne</th>
+                        <th>Date de la séances</th>
+                        <th>Heure début</th>
+                        <th>Heure Fin</th>
+                        <th>Type</th>
+                        <th>Test d'évaluat°</th>
+                        <th>Absence</th>
+                        <th>Note</th>
                     </tr>
                 </thead>
                 <tbody>
                 <?php
-                $nbr_students = 0;
-                    foreach($res_list_std as $student){
-                        $nbr_students +=1;
-                        $s=0;
-                        $moy = 0;
-                         ?>
-                        <tr>
-                            <td><?php echo $student['nomEtd']; ?></td>
-                            <td><?php echo $student['prenomEtd']; ?></td>
-                            <td>
-                            <?php foreach($res_assiduite as $info){
-                                if($student['id_etudiant']===$info['id_etudiant']){
-                                    $s+=$info['note_test'];
-                                    echo ' | '.$info['note_test'];
-                                }
+                    if($res_assiduite){
+                        $nbr_absence = 0;
+                        $nbr_present = 0;
+
+                        foreach($res_assiduite as $assiduite){
+                            if($assiduite['isAbsent']==="1"){
+                                $nbr_absence+=1;
                             }
-                        ?>
-                            </td>
-                            <td><?php echo $s; ?></td>
-                             <td><?php $moy = $s/$nbr_test; 
-                                if($moy>= 10){ $sup_10 +=1; }
-                                else { $inf_10 +=1;}
-                                echo round($moy, 2); ?>
-                             </td>  
-                        </tr>
-                <?php } ?>
+                            else{
+                                $nbr_present+=1;
+                            } 
+                            
+                            ?>
+                            <tr>
+                                <td><?php echo $assiduite['date_seance']; ?></td>
+                                <td><?php echo $assiduite['heure_debut']; ?></td>
+                                <td><?php echo $assiduite['heure_fin']; ?></td>
+                                <td>
+                                    <?php if($assiduite['type_seance']=="1") echo "Cours";
+                                        if($assiduite['type_seance']=="2") echo "TP";  ?>
+                                </td>
+                                <td>
+                                    <?php if($assiduite['test_evaluation']=="0") echo "Non";
+                                        if($assiduite['test_evaluation']=="1") echo "Oui";  ?>
+                                </td>
+                                <td>
+                                    <?php if($assiduite['isAbsent']=="0") echo "Non";
+                                        if($assiduite['isAbsent']=="1") echo "Oui";  ?>
+                                </td>
+                                <td><?php echo $assiduite['note_test']; ?></td> 
+                            </tr>
+                    <?php } 
+                    } else {}?>
+                    
                 </tbody>
             </table>
         </div>
     </div>
+
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Répartition des étudiants selon leur moyenne (supérieure/ inférieure à 10) de la matière</h6>
+            <h6 class="m-0 font-weight-bold text-primary">Taux d'absences en % de cette matière</h6>
         </div>
         <div class="card-body" >
-            <?php $m_sup_10 = round($sup_10*100/$nbr_students, 2);
-            $m_onf_10 = round($inf_10*100/$nbr_students, 2);
-            ?>
             <div class="text-center col-md-12">
                  <center>
                     <div style="display: block; box-sizing: border-box; height: 350px; width: 350px; ">
@@ -160,8 +182,7 @@ $res_list_std=mysqli_query($con, $query_assd_student);
                 </center>
             </div>
         </div>
-    <div>
-                            
+    <div>                      
 </div>
 </div>
 </div>
@@ -169,12 +190,12 @@ $res_list_std=mysqli_query($con, $query_assd_student);
 <script>
     const data = {
     labels: [
-        '>=10',
-        '<10',
+        'OUI',
+        'NON',
     ],
     datasets: [{
         label: 'My First Dataset',
-        data: [<?php echo $m_sup_10.' , '.$m_onf_10 ; ?>],
+        data: [<?php echo $nbr_absence.' , '.$nbr_present ; ?>],
         backgroundColor: [
         'rgb(237, 125, 49)',
         'rgb(91, 155, 213)',
