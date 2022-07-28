@@ -19,8 +19,9 @@ $query_gr="SELECT * from groupe WHERE idGroupe='".$id_groupe."'";
 $res_gr = mysqli_query($con, $query_gr) or die ( mysqli_error());
 $data_gr = mysqli_fetch_assoc($res_gr);
 
-$query_course = "SELECT * from coursesession 
-     where id_matiere='".$id_subject."' and id_groupe='".$id_groupe."' and id_ens='".$id_ens."'";
+$query_course = "SELECT coursesession.*, enseignant.* from coursesession
+LEFT JOIN enseignant ON coursesession.id_ens = enseignant.numEns 
+     where coursesession.id_matiere='".$id_subject."' and coursesession.id_groupe='".$id_groupe."'";
 
 $res = mysqli_query($con, $query_course);
 $heure_cours = 0;
@@ -69,7 +70,7 @@ $res_list_std=mysqli_query($con, $query_assd_student);
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Statistique sur une matière par groupe</h6>
+            <h6 class="m-0 font-weight-bold text-primary">Information sur la matière</h6>
         </div>
         <div class="card-body" >
             <div style="background-color:#d8e0e7; padding-left:20px; padding-top:10px; border-radius:10px">
@@ -79,6 +80,10 @@ $res_list_std=mysqli_query($con, $query_assd_student);
                 </div>
                 <div class="mb-3 row">
                     <label class="col-md-4 form-label font-weight-bold text-danger">Nom du groupe : </label>
+                    <div class="col-md-3"><label class="form-label font-weight-bold "><?php echo $data_gr['nomGroupe']; ?></label></div>
+                </div>
+                <div class="mb-3 row">
+                    <label class="col-md-4 form-label font-weight-bold text-danger">Enseignant : </label>
                     <div class="col-md-3"><label class="form-label font-weight-bold "><?php echo $data_gr['nomGroupe']; ?></label></div>
                 </div>
                 <div class="mb-3 row">
@@ -117,6 +122,7 @@ $res_list_std=mysqli_query($con, $query_assd_student);
                 <tbody>
                 <?php
                 $nbr_students = 0;
+                if($res_list_std ){
                     foreach($res_list_std as $student){
                         $nbr_students +=1;
                         $s=0;
@@ -138,15 +144,16 @@ $res_list_std=mysqli_query($con, $query_assd_student);
                         ?>
                             </td>
                             <td><?php echo $s; ?></td>
-                             <td><?php if($nbr_test> 0){
+                             <td><?php  if($nbr_test> 0){
                                 $moy = $s/$nbr_test; 
                                 if($moy>= 10){ $sup_10 +=1; }
                                 else { $inf_10 +=1;}
-                                echo round($moy, 2); 
-                            }?>
+                                echo round($moy, 2);
+                              } ?>
                              </td>  
                         </tr>
-                <?php } ?>
+                <?php }
+                } else {} ?>
                 </tbody>
             </table>
         </div>
@@ -156,10 +163,12 @@ $res_list_std=mysqli_query($con, $query_assd_student);
             <h6 class="m-0 font-weight-bold text-primary">Répartition des étudiants selon leur moyenne (supérieure/ inférieure à 10) de la matière</h6>
         </div>
         <div class="card-body" >
+
             <?php if($nbr_students>0){
                 $m_sup_10 = round($sup_10*100/$nbr_students, 2);
                 $m_onf_10 = round($inf_10*100/$nbr_students, 2);
-            } ?>
+            }
+            ?>
             <div class="text-center col-md-12">
                  <center>
                     <div style="display: block; box-sizing: border-box; height: 350px; width: 350px; ">
@@ -168,7 +177,7 @@ $res_list_std=mysqli_query($con, $query_assd_student);
                 </center>
             </div>
         </div>
-    <div>
+        </div>
                             
 </div>
 </div>
