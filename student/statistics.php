@@ -32,6 +32,10 @@ $res=mysqli_query($con, $sql_subject);
                             </div>
                            
                             <div class="card-body">
+                                <a href="statistics_details_all.php" class="btn btn-primary">Statistique pour tous les matières</a>
+                            <br><br>
+                            <label class="font-weight-bold text-danger">Ou Par Matière </label>
+                            <br>
                                 <form id="" action="statistics_details.php" method="post"> 
                                     <label for="subject" class="col-md-4 form-label" style="color:#000"><b>Choisir une matière : </b></label>
                                     <div class="col-md-4">
@@ -53,38 +57,6 @@ $res=mysqli_query($con, $sql_subject);
 </div>
 <!-- /.container-fluid -->
 <script>
-  $(function(){
-    
-
-    $('#subject').on('change',function() {
-       id_mat = $('#subject option:selected').val();
-
-      $.ajax({
-        url: 'getgroupe.php',
-        method: 'post',
-        data: {id_mat: id_mat},
-        success: function(response){
-
-            response = JSON.parse(response);
-            var len = response.length;
-
-            $("#groupe").empty();
-            $("#groupe").append("<option value=''>Choisir le groupe</option>");
-            for( var i = 0; i<len; i++){
-                var id = response[i]['idGroupe'];
-                var name = response[i]['nomGroupe'];
-                $("#groupe").append("<option value='"+id+"'>"+name+"</option>");
-            }
-        },
-        error: function(xhr, status, error){
-            console.error(xhr);
-            //alert("ko");
-        }
-      });
-
-    });    
-
-  });
 
 </script>
 <?php

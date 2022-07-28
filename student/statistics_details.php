@@ -81,7 +81,7 @@ $res_assiduite=mysqli_query($con, $query_assiduite);
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Statistique sur une matière par groupe</h6>
+            <h6 class="m-0 font-weight-bold text-primary">Statistique sur une matière</h6>
         </div>
         <div class="card-body" >
             <div style="background-color:#d8e0e7; padding-left:20px; padding-top:10px; border-radius:10px">
